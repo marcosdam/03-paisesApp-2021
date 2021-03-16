@@ -6,35 +6,37 @@ import { PaisService } from '../../services/pais.service';
   selector: 'app-por-region',
   templateUrl: './por-region.component.html',
   styles: [
+    `
+    button {
+      margin-right: 1.5px;
+    }
+    `
   ]
 })
 export class PorRegionComponent {
 
+  regiones: string[] = ['africa', 'americas', 'asia', 'europe', 'oceania'];
+  regionActiva: string = '';
+  paises: Country[] = [];
+  termino: string = '';
+
   constructor( private paisService: PaisService ) { }
 
-  termino: string = '';
-  hayError: boolean = false;
-  paises: Country[] = [];
-
-  buscar( termino: string ){
-    this.hayError = false;
-    this.termino = termino;
-    console.log(this.termino);
-
-    this.paisService.buscarRegion( this.termino )
-      .subscribe( paises => {
-        console.log(paises);
-        this.paises = paises;
-
-      }, (err) => {
-        this.hayError = true;
-        this.paises = [];
-      });
+  getClaseCss( region: string ): string{
+    return (region === this.regionActiva) ? 'btn btn-primary' : 'btn btn-outline-primary';
   }
 
-  sugerencias( termino: string ){
-    this.hayError = false;
-    // TODO -> Crear sugerencias
+  activarRegion( region: string ){
+    if( region === this.regionActiva ){ return; }
+
+    this.regionActiva = region;
+    this.paises = [];
+
+    this.paisService.buscarRegion( region )
+    .subscribe( paises => {
+      console.log(paises.length);
+      this.paises = paises;
+    });
   }
 
 }
